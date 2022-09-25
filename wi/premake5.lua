@@ -20,6 +20,9 @@ project "wi"
     includedirs
     {  
         "src",
+        "../wi/vendor/glm",
+        "../wi/vendor/spdlog/include",
+
     }
 
     links
