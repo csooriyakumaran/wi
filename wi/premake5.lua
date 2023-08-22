@@ -15,14 +15,14 @@ project "wi"
     { 
         "src/**.h", 
         "src/**.cpp",
+        "include/**.h"
     }
 
     includedirs
     {  
         "src",
-        "../wi/vendor/glm",
-        "../wi/vendor/spdlog/include",
-
+        "../vendor/glm",
+        "../vendor/spdlog/include",
     }
 
     links
@@ -31,7 +31,9 @@ project "wi"
 
     defines
     {
-        "_USE_MATH_DEFINES"
+        "_USE_MATH_DEFINES",
+        "_CRT_SECURE_NO_WARNINGS",
+        "_CRT_NONSTDC_NO_DEPRECATE",
     }
 
 

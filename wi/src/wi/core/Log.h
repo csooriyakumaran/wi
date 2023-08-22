@@ -1,11 +1,13 @@
 #pragma once
 
-#include "wipch.h"
 
 #include <spdlog/spdlog.h>
 #include <spdlog/fmt/ostr.h>
 
+#include <glm/glm.hpp>
+#include <map>
 
+#define HAS_CONSOLE !WI_DIST
 
 namespace wi {
 
@@ -33,6 +35,9 @@ namespace wi {
 
 		static void Init();
 		static void Shutdown();
+
+		template<typename T, typename ... Args>
+		static void AddSink(Args&& ... args);
 
 		inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return s_EngineLogger; }
 		inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
@@ -107,45 +112,45 @@ inline OStream& operator<<(OStream& os, glm::qua<T, Q> quaternion)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Core logging
-#define OAK_CORE_TRACE_TAG(tag, ...) ::Oak::Log::PrintMessage(::Oak::Log::Type::Core, ::Oak::Log::Level::Trace, tag, __VA_ARGS__)
-#define OAK_CORE_INFO_TAG(tag, ...)  ::Oak::Log::PrintMessage(::Oak::Log::Type::Core, ::Oak::Log::Level::Info, tag, __VA_ARGS__)
-#define OAK_CORE_WARN_TAG(tag, ...)  ::Oak::Log::PrintMessage(::Oak::Log::Type::Core, ::Oak::Log::Level::Warn, tag, __VA_ARGS__)
-#define OAK_CORE_ERROR_TAG(tag, ...) ::Oak::Log::PrintMessage(::Oak::Log::Type::Core, ::Oak::Log::Level::Error, tag, __VA_ARGS__)
-#define OAK_CORE_FATAL_TAG(tag, ...) ::Oak::Log::PrintMessage(::Oak::Log::Type::Core, ::Oak::Log::Level::Fatal, tag, __VA_ARGS__)
+#define LOG_CORE_TRACE_TAG(tag, ...) ::wi::Log::PrintMessage(::wi::Log::Type::Core, ::wi::Log::Level::Trace, tag, __VA_ARGS__)
+#define LOG_CORE_INFO_TAG(tag, ...)  ::wi::Log::PrintMessage(::wi::Log::Type::Core, ::wi::Log::Level::Info, tag, __VA_ARGS__)
+#define LOG_CORE_WARN_TAG(tag, ...)  ::wi::Log::PrintMessage(::wi::Log::Type::Core, ::wi::Log::Level::Warn, tag, __VA_ARGS__)
+#define LOG_CORE_ERROR_TAG(tag, ...) ::wi::Log::PrintMessage(::wi::Log::Type::Core, ::wi::Log::Level::Error, tag, __VA_ARGS__)
+#define LOG_CORE_FATAL_TAG(tag, ...) ::wi::Log::PrintMessage(::wi::Log::Type::Core, ::wi::Log::Level::Fatal, tag, __VA_ARGS__)
 
 // Client logging
-#define OAK_TRACE_TAG(tag, ...) ::Oak::Log::PrintMessage(::Oak::Log::Type::Client, ::Oak::Log::Level::Trace, tag, __VA_ARGS__)
-#define OAK_INFO_TAG(tag, ...)  ::Oak::Log::PrintMessage(::Oak::Log::Type::Client, ::Oak::Log::Level::Info, tag, __VA_ARGS__)
-#define OAK_WARN_TAG(tag, ...)  ::Oak::Log::PrintMessage(::Oak::Log::Type::Client, ::Oak::Log::Level::Warn, tag, __VA_ARGS__)
-#define OAK_ERROR_TAG(tag, ...) ::Oak::Log::PrintMessage(::Oak::Log::Type::Client, ::Oak::Log::Level::Error, tag, __VA_ARGS__)
-#define OAK_FATAL_TAG(tag, ...) ::Oak::Log::PrintMessage(::Oak::Log::Type::Client, ::Oak::Log::Level::Fatal, tag, __VA_ARGS__)
+#define LOG_TRACE_TAG(tag, ...) ::wi::Log::PrintMessage(::wi::Log::Type::Client, ::wi::Log::Level::Trace, tag, __VA_ARGS__)
+#define LOG_INFO_TAG(tag, ...)  ::wi::Log::PrintMessage(::wi::Log::Type::Client, ::wi::Log::Level::Info, tag, __VA_ARGS__)
+#define LOG_WARN_TAG(tag, ...)  ::wi::Log::PrintMessage(::wi::Log::Type::Client, ::wi::Log::Level::Warn, tag, __VA_ARGS__)
+#define LOG_ERROR_TAG(tag, ...) ::wi::Log::PrintMessage(::wi::Log::Type::Client, ::wi::Log::Level::Error, tag, __VA_ARGS__)
+#define LOG_FATAL_TAG(tag, ...) ::wi::Log::PrintMessage(::wi::Log::Type::Client, ::wi::Log::Level::Fatal, tag, __VA_ARGS__)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Core Logging
-#define OAK_CORE_TRACE(...)  ::Oak::Log::PrintMessage(::Oak::Log::Type::Core, ::Oak::Log::Level::Trace, "", __VA_ARGS__)
-#define OAK_CORE_INFO(...)   ::Oak::Log::PrintMessage(::Oak::Log::Type::Core, ::Oak::Log::Level::Info, "", __VA_ARGS__)
-#define OAK_CORE_WARN(...)   ::Oak::Log::PrintMessage(::Oak::Log::Type::Core, ::Oak::Log::Level::Warn, "", __VA_ARGS__)
-#define OAK_CORE_ERROR(...)  ::Oak::Log::PrintMessage(::Oak::Log::Type::Core, ::Oak::Log::Level::Error, "", __VA_ARGS__)
-#define OAK_CORE_FATAL(...)  ::Oak::Log::PrintMessage(::Oak::Log::Type::Core, ::Oak::Log::Level::Fatal, "", __VA_ARGS__)
+#define LOG_CORE_TRACE(...)  ::wi::Log::PrintMessage(::wi::Log::Type::Core, ::wi::Log::Level::Trace, "", __VA_ARGS__)
+#define LOG_CORE_INFO(...)   ::wi::Log::PrintMessage(::wi::Log::Type::Core, ::wi::Log::Level::Info, "", __VA_ARGS__)
+#define LOG_CORE_WARN(...)   ::wi::Log::PrintMessage(::wi::Log::Type::Core, ::wi::Log::Level::Warn, "", __VA_ARGS__)
+#define LOG_CORE_ERROR(...)  ::wi::Log::PrintMessage(::wi::Log::Type::Core, ::wi::Log::Level::Error, "", __VA_ARGS__)
+#define LOG_CORE_FATAL(...)  ::wi::Log::PrintMessage(::wi::Log::Type::Core, ::wi::Log::Level::Fatal, "", __VA_ARGS__)
 
 // Client Logging
-#define OAK_TRACE(...)   ::Oak::Log::PrintMessage(::Oak::Log::Type::Client, ::Oak::Log::Level::Trace, "", __VA_ARGS__)
-#define OAK_INFO(...)    ::Oak::Log::PrintMessage(::Oak::Log::Type::Client, ::Oak::Log::Level::Info, "", __VA_ARGS__)
-#define OAK_WARN(...)    ::Oak::Log::PrintMessage(::Oak::Log::Type::Client, ::Oak::Log::Level::Warn, "", __VA_ARGS__)
-#define OAK_ERROR(...)   ::Oak::Log::PrintMessage(::Oak::Log::Type::Client, ::Oak::Log::Level::Error, "", __VA_ARGS__)
-#define OAK_FATAL(...)   ::Oak::Log::PrintMessage(::Oak::Log::Type::Client, ::Oak::Log::Level::Fatal, "", __VA_ARGS__)
+#define LOG_TRACE(...)   ::wi::Log::PrintMessage(::wi::Log::Type::Client, ::wi::Log::Level::Trace, "", __VA_ARGS__)
+#define LOG_INFO(...)    ::wi::Log::PrintMessage(::wi::Log::Type::Client, ::wi::Log::Level::Info, "", __VA_ARGS__)
+#define LOG_WARN(...)    ::wi::Log::PrintMessage(::wi::Log::Type::Client, ::wi::Log::Level::Warn, "", __VA_ARGS__)
+#define LOG_ERROR(...)   ::wi::Log::PrintMessage(::wi::Log::Type::Client, ::wi::Log::Level::Error, "", __VA_ARGS__)
+#define LOG_FATAL(...)   ::wi::Log::PrintMessage(::wi::Log::Type::Client, ::wi::Log::Level::Fatal, "", __VA_ARGS__)
 
 
-namespace Oak {
-
+namespace wi 
+{
 	template<typename... Args>
 	void Log::PrintMessage(Log::Type type, Log::Level level, std::string_view tag, Args&&... args)
 	{
-		auto detail = s_EnabledTags[std::string(tag)];
+		TagDetails& detail = s_EnabledTags[std::string(tag)];
 		if (detail.Enabled && detail.LevelFilter <= level)
 		{
-			auto logger = (type == Type::Core) ? GetCoreLogger() : GetClientLogger();
+			std::shared_ptr<spdlog::logger>& logger = (type == Type::Core) ? GetCoreLogger() : GetClientLogger();
 			std::string logString = tag.empty() ? "{0}{1}" : "<{0}> {1}";
 			switch (level)
 			{
@@ -171,14 +176,27 @@ namespace Oak {
 	template<typename... Args>
 	void Log::PrintAssertMessage(Log::Type type, std::string_view prefix, Args&&... args)
 	{
-		auto logger = (type == Type::Core) ? GetCoreLogger() : GetClientLogger();
+		std::shared_ptr<spdlog::logger>& logger = (type == Type::Core) ? GetCoreLogger() : GetClientLogger();
 		logger->error("{0}: {1}", prefix, fmt::format(std::forward<Args>(args)...));
 	}
 
 	template<>
 	inline void Log::PrintAssertMessage(Log::Type type, std::string_view prefix)
 	{
-		auto logger = (type == Type::Core) ? GetCoreLogger() : GetClientLogger();
+		std::shared_ptr<spdlog::logger>& logger = (type == Type::Core) ? GetCoreLogger() : GetClientLogger();
 		logger->error("{0}", prefix);
+	}
+
+	template<typename T, typename ... Args>
+	void Log::AddSink(Args&& ... args)
+	{
+		//std::static_assert()  // is base of std::make_shared<EmbeddedConsoleSink>(2)
+
+		spdlog::sink_ptr newsink = std::make_shared<T>(std::forward<Args>(args) ...);
+		newsink->set_pattern("%^[%d-%m-%Y %H:%M:%S:%e] %n: %v%$");
+
+		s_EngineLogger->sinks().push_back(newsink);
+		s_ClientLogger->sinks().push_back(newsink);
+
 	}
 }
